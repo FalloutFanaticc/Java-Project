@@ -57,4 +57,4 @@ See [docs/manual-test-plan.md](docs/manual-test-plan.md) for threshold, malforme
 
 ## Safety and classroom use
 
-Use synthetic logs, fictional identities, and documentation-only IPs. This project performs local defensive log analysis; it does not scan, connect to, or test real systems. Students should follow their instructor's AI-use and disclosure policy and be prepared to explain their code.
+Use synthetic logs, fictional identities, and documentation-only IPs. This project performs local defensive log analysis; it does not scan, connect to, or test real systems. 
