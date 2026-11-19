@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyber Defense Analyzer: Simulator</title>
+<meta name="description" content="Interactive browser simulator of a Java log analyzer that flags suspicious security events.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A1%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#e9eef3;--ink:#1b2733;--mute:#566574;--line:#cbd5df;--panel:#fff;--acc:#2f5da8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121920;--ink:#e3eaf1;--mute:#9aaab9;--line:#2f3d4b;--panel:#1c2530;--acc:#7fa8e8}}
+:root[data-theme="dark"]{--bg:#121920;--ink:#e3eaf1;--mute:#9aaab9;--line:#2f3d4b;--panel:#1c2530;--acc:#7fa8e8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:26px 16px 60px}h1{font-size:26px;margin:0 0 4px}p{margin:6px 0;color:var(--mute);max-width:75ch}
+.tabs{display:flex;gap:6px;margin:18px 0 12px}.tabs button{font:inherit;font-size:14px;padding:7px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.win{position:relative;background:#eee;border:1px solid #777;border-radius:6px;overflow:hidden;color:#222;box-shadow:0 8px 28px rgba(0,0,0,.28);font:13px "Segoe UI",Arial,sans-serif}
+.tb{background:#3c4650;color:#fff;padding:7px 12px;display:flex;align-items:center;gap:8px;font-size:13px}.tb i{width:11px;height:11px;border-radius:50%;background:#9aa5b1;display:inline-block}.tb span{margin:0 auto}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:12px 12px 8px}.top input{flex:1 1 200px;min-width:0;max-width:340px;font:13px "Segoe UI",Arial,sans-serif;padding:3px 5px;border:1px solid #888;background:#fff;color:#111}
+.jb{font:12.5px "Segoe UI",Arial,sans-serif;background:linear-gradient(#fbfbfb,#d8d8d8);border:1px solid #8a8a8a;border-radius:3px;padding:4px 12px;color:#111;cursor:pointer}.jb:hover{background:linear-gradient(#fff,#e6e6e6)}.jb:focus-visible{outline:2px solid #3b7bd0}
+.area{margin:0 12px;height:420px;overflow:auto;background:#fff;border:1px solid #888}.area pre{margin:0;padding:6px;font:13px/1.35 ui-monospace,Menlo,Consolas,monospace;color:#111;white-space:pre}
+.st{padding:6px 14px 8px;font-size:12.5px}
+.ov{position:absolute;inset:0;background:rgba(0,0,0,.28);display:none;align-items:center;justify-content:center;padding:12px}.ov.on{display:flex}
+.dg{background:#eee;border:1px solid #666;border-radius:4px;min-width:260px;max-width:92%;box-shadow:0 6px 20px rgba(0,0,0,.4)}.dg h4{margin:0;background:#cfd6dd;padding:5px 10px;font-size:12.5px;border-bottom:1px solid #aaa}
+.dg .bd{padding:14px;white-space:pre-wrap;word-break:break-word}.dg .bt{display:flex;gap:8px;justify-content:center;padding:0 12px 12px}
+.fl{list-style:none;margin:8px 0;padding:0;background:#fff;border:1px solid #888;max-height:120px;overflow:auto}.fl li{padding:3px 8px;cursor:pointer}.fl li.s{background:#3b7bd0;color:#fff}
+.edit{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.edit h2{font-size:16px;margin:0 0 4px}
+.edit textarea{width:100%;height:170px;margin-top:8px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chips button{font:inherit;font-size:13px;padding:5px 10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;cursor:pointer}.chips button:hover{border-color:var(--acc);color:var(--acc)}
+.term{background:#0f1419;color:#d5dde6;border-radius:8px;border:1px solid #2b3744;overflow:hidden}.term .opts{display:flex;flex-wrap:wrap;gap:10px;padding:10px 12px;background:#18212b;font-size:13px;align-items:center}
+.term .opts input,.term .opts select{font:13px ui-monospace,Menlo,monospace;background:#0f1419;color:#d5dde6;border:1px solid #3a4856;border-radius:4px;padding:3px 6px;width:120px}.term .opts select{width:auto}
+.term .opts button{font:13px inherit;background:#2f5da8;color:#fff;border:0;border-radius:6px;padding:5px 14px;cursor:pointer}
+.term pre{margin:0;padding:12px;overflow:auto;max-height:520px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace}.term .cmd{color:#7fd1a9}
+.edit{margin:0 0 6px}.edit h2{font-size:17px}.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.edit select{font:inherit;font-size:14px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);max-width:100%;flex:1 1 260px}
+.ub{font:inherit;font-size:14px;padding:7px 14px;border:1px solid var(--acc);border-radius:6px;background:transparent;color:var(--acc);cursor:pointer}
+.edit.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}.note{font-size:14px;color:var(--mute);margin:8px 0 0}
+details.ed summary{cursor:pointer;color:var(--acc);font-size:14px;margin-top:10px}footer{margin-top:28px;font-size:13px;color:var(--mute)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1>Cyber Defense Analyzer: simulator</h1>
+<p>A working copy of the program’s look and logic, running in your browser. The parsing, the four rules, the sorting, and the report format are ported from the Java source. Dialog and error messages are close approximations.</p>
+<div class="edit" id="panel"><h2>1. Pick a log file</h2>
+<div class="row"><select id="pre" aria-label="Sample log files"></select><button class="ub" id="bUp">Upload your own .csv</button><input type="file" id="up" accept=".csv,.txt,text/csv,text/plain" hidden></div>
+<p class="note" id="desc"></p>
+<details class="ed"><summary>View or edit the file contents</summary><textarea id="csv" spellcheck="false" aria-label="CSV contents" style="width:100%;height:170px;margin-top:8px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px"></textarea></details>
+<p class="note">Drag and drop a .csv onto this box to load it. Files never leave your browser. Expected columns: timestamp, username, event_type, source_ip.</p></div>
+<div class="tabs" role="tablist"><button role="tab" aria-selected="true" id="tg">Desktop window (GUI)</button><button role="tab" aria-selected="false" id="tt">Terminal (Main)</button></div>
+
+<section id="gui">
+<div class="win" id="win">
+<div class="tb"><i></i><i></i><i></i><span>Cyber Defense Analyzer</span></div>
+<div class="top"><label for="inp">CSV file:</label><input id="inp" value="data/sample_events.csv" aria-label="CSV file path"><button class="jb" id="bBrowse">Browse…</button><button class="jb" id="bAn">Analyze logs</button><button class="jb" id="bSave">Save report…</button></div>
+<div class="area"><pre id="rep">Choose a CSV file or use data/sample_events.csv, then click Analyze logs.</pre></div>
+<div class="st" id="st">Ready — choose a CSV file and analyze it.</div>
+<div class="ov" id="ov"><div class="dg" role="dialog" aria-modal="true"><h4 id="dt"></h4><div class="bd" id="db"></div><div class="bt" id="dbt"></div></div></div>
+</div>
+</section>
+
+<section id="term" hidden>
+<div class="term"><div class="opts"><span class="cmd">options:</span><label>--min-severity <select id="fs"><option value="">(none)</option><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label><label>--user <input id="fu"></label><label>--type <input id="ft"></label><button id="bRun">Run</button></div>
+<pre id="tout"></pre></div>
+</section>
+
+<footer>Static page: no build step, no network requests. Logic ported from the Java Cyber Defense Analyzer project. Sample IPs come from ranges reserved for documentation.</footer>
+</main>
+<script>
+(function(){
+var H="timestamp,username,event_type,source_ip\n",SEV=["LOW","MEDIUM","HIGH","CRITICAL"],current="",sel="";
+function R(t,u,y,i){return"2026-03-10T"+t+","+u+","+y+","+i}function C(a){return H+a.join("\n")+"\n"}
+var SAMPLE=C([R("09:00:00","alex","LOGIN_SUCCESS","192.0.2.10"),R("09:02:00","jordan","LOGIN_FAILURE","192.0.2.20"),R("09:02:15","jordan","LOGIN_FAILURE","192.0.2.20"),R("09:02:30","jordan","LOGIN_FAILURE","192.0.2.20"),R("09:03:00","jordan","ACCOUNT_LOCKED","192.0.2.20"),R("09:05:00","alex","FILE_ACCESS_DENIED","192.0.2.10")]);
+var spray=["alex","jordan","casey","sam","riley","morgan","taylor","drew","quinn","avery"].map(function(u,i){return R("09:00:"+(i*5<10?"0":"")+i*5,u,"LOGIN_FAILURE","203.0.113.9")});
+var PRE=[
+["data/sample_events.csv","Project sample (6 events)","The project’s own sample. Expect 3 alerts: jordan’s repeated failures, jordan’s lockout, and alex’s denied file access.",SAMPLE],
+["data/quiet_day.csv","Quiet day (no threats)","Normal logins and one typo that was fixed 20 seconds later. Expect 0 alerts: the analyzer should stay silent.",C([R("08:55:00","alex","LOGIN_SUCCESS","192.0.2.10"),R("09:01:00","jordan","LOGIN_SUCCESS","192.0.2.20"),R("09:10:00","casey","LOGIN_FAILURE","192.0.2.30"),R("09:10:20","casey","LOGIN_SUCCESS","192.0.2.30"),R("09:30:00","sam","LOGIN_SUCCESS","192.0.2.40"),R("12:02:00","alex","LOGIN_SUCCESS","192.0.2.10")])],
+["data/brute_force_attack.csv","Brute force attack at 2 AM","An attacker hammers admin (6 failures, then a lockout), then tries root. Expect 3 HIGH alerts. Notice the admin alert says 3 failures even though there were 6: the program reports only the first window.",C([R("02:14:00","admin","LOGIN_FAILURE","198.51.100.7"),R("02:14:10","admin","LOGIN_FAILURE","198.51.100.7"),R("02:14:20","admin","LOGIN_FAILURE","198.51.100.7"),R("02:14:30","admin","LOGIN_FAILURE","198.51.100.7"),R("02:14:40","admin","LOGIN_FAILURE","198.51.100.7"),R("02:14:50","admin","LOGIN_FAILURE","198.51.100.7"),R("02:14:55","admin","ACCOUNT_LOCKED","198.51.100.7"),R("02:20:00","root","LOGIN_FAILURE","198.51.100.7"),R("02:20:20","root","LOGIN_FAILURE","198.51.100.7"),R("02:20:40","root","LOGIN_FAILURE","198.51.100.7")])],
+["data/insider_snooping.csv","Insider snooping late at night","One employee logs in at 11:30 PM, gets denied four times, then triggers unusual network activity twice. Expect 6 MEDIUM alerts.",C([R("23:30:00","pat","LOGIN_SUCCESS","192.0.2.55"),R("23:32:00","pat","FILE_ACCESS_DENIED","192.0.2.55"),R("23:33:10","pat","FILE_ACCESS_DENIED","192.0.2.55"),R("23:34:05","pat","FILE_ACCESS_DENIED","192.0.2.55"),R("23:35:40","pat","FILE_ACCESS_DENIED","192.0.2.55"),R("23:41:00","pat","UNUSUAL_NETWORK_ACTIVITY","192.0.2.55"),R("23:44:30","pat","UNUSUAL_NETWORK_ACTIVITY","192.0.2.55")])],
+["data/messy_log.csv","Messy log (bad rows)","Quoted name with a comma, lowercase event types, a blank line, a short row, an empty username, and an unterminated quote. Expect warnings for the bad rows, while the good rows still work.",C([R("10:00:00",'"Smith, Jo"',"login_failure","192.0.2.30"),R("10:00:20",'"Smith, Jo"',"login_failure","192.0.2.30"),R("10:00:40",'"Smith, Jo"',"login_failure","192.0.2.30"),"","2026-03-10T10:02:00,casey,LOGIN_FAILURE",R("10:05:00","","LOGIN_FAILURE","192.0.2.31"),'2026-03-10T10:06:00,"oops,LOGIN_FAILURE,192.0.2.32',R("10:07:00","alex","login_success","192.0.2.10")])],
+["data/password_spraying.csv","Password spraying (slips past)","Ten different accounts each fail once from the same IP within a minute. This is a real attack pattern, but expect 0 alerts: the rules count failures per user and ignore the IP. A false negative.",C(spray)],
+["data/bug1_bad_timestamp.csv","Bug 1: bad timestamp crashes","The sample plus one row with a timestamp that is not a date. The README says bad rows are skipped, but the program actually crashes.",SAMPLE+"not-a-date,bob,LOGIN_FAILURE,192.0.2.11\n"],
+["data/bug2_five_min_59s.csv","Bug 2: 5 min 59 s counts","Failures at 09:00:00, 09:03:00, and 09:05:59. That is over five minutes, but whole-minute truncation lets it alert anyway.",C([R("09:00:00","sam","LOGIN_FAILURE","192.0.2.5"),R("09:03:00","sam","LOGIN_FAILURE","192.0.2.5"),R("09:05:59","sam","LOGIN_FAILURE","192.0.2.5")])],
+["data/bug3_username_case.csv","Bug 3: Sam / sam / SAM","Three failures in two minutes, but typed with different capitalization. Expect an alert, get none: they count as three different users.",C([R("09:00:00","Sam","LOGIN_FAILURE","192.0.2.5"),R("09:01:00","sam","LOGIN_FAILURE","192.0.2.5"),R("09:02:00","SAM","LOGIN_FAILURE","192.0.2.5")])]
+];
+var files={},descs={};PRE.forEach(function(p){files[p[0]]=p[3];descs[p[0]]=p[2]});
+function $(i){return document.getElementById(i)}
+function IAE(m){this.message=m}function DTPE(m){this.message=m}
+function parseCsv(l){var f=[],b="",q=false;for(var i=0;i<l.length;i++){var c=l[i];if(c=='"'){if(q&&l[i+1]=='"'){b+='"';i++}else q=!q}else if(c==","&&!q){f.push(b);b=""}else b+=c}if(q)throw new IAE("unterminated quoted field");f.push(b);return f}
+function ldt(s){var m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,9}))?)?$/.exec(s),bad="Text '"+s+"' could not be parsed at index 0";if(!m)throw new DTPE(bad);
+var y=+m[1],mo=+m[2],d=+m[3],h=+m[4],mi=+m[5],se=+(m[6]||0),dt=new Date(Date.UTC(y,mo-1,d));
+if(mo<1||mo>12||dt.getUTCDate()!==d||h>23||mi>59||se>59)throw new DTPE(bad);
+var p=function(n){return(n<10?"0":"")+n},fr=m[7]?m[7].replace(/0+$/,""):"",str=m[1]+"-"+m[2]+"-"+m[3]+"T"+m[4]+":"+m[5];
+if(se||fr){str+=":"+p(se);if(fr)str+="."+fr.padEnd(Math.ceil(fr.length/3)*3,"0")}
+return{t:Date.UTC(y,mo-1,d,h,mi,se)/1000+(m[7]?+("0."+m[7]):0),str:str}}
+function read(text){var lines=text.split(/\r\n|\r|\n/),ev=[],er=[];if(lines.length&&lines[lines.length-1]==="")lines.pop();
+for(var i=0;i<lines.length;i++){var line=lines[i].trim();if(!line)continue;if(i===0&&line.toLowerCase().indexOf("timestamp,")===0)continue;
+try{var f=parseCsv(line);if(f.length!==4)throw new IAE("expected 4 CSV columns");var ts=ldt(f[0].trim()),u=f[1].trim(),ty=f[2].trim().toUpperCase(),ip=f[3].trim();
+if(!u||!ty||!ip)throw new IAE("username, event_type, and source_ip must not be empty");ev.push({t:ts.t,ts:ts.str,user:u,type:ty,ip:ip})}
+catch(e){if(e instanceof IAE)er.push("Line "+(i+1)+": "+e.message);else throw e}}return{events:ev,errors:er}}
+function A(sev,r,title,why,act,evs){return{sev:sev,risk:r,title:title,why:why,act:act,evs:evs}}
+function analyze(events){var ev=events.slice().sort(function(a,b){return a.t-b.t}),al=[],fb=new Map();
+ev.forEach(function(e){if(e.type==="LOGIN_FAILURE"){if(!fb.has(e.user))fb.set(e.user,[]);fb.get(e.user).push(e)}
+if(e.type==="ACCOUNT_LOCKED")al.push(A("HIGH",75,"Account locked: "+e.user,"An account lockout was recorded at "+e.ts+" from "+e.ip+".","Review preceding authentication failures and verify the lockout was expected.",[e]));
+if(e.type==="FILE_ACCESS_DENIED")al.push(A("MEDIUM",35,"Access denied: "+e.user,"A file access attempt was denied at "+e.ts+" from "+e.ip+".","Confirm the account had a legitimate need for this resource.",[e]));
+if(e.type==="UNUSUAL_NETWORK_ACTIVITY")al.push(A("MEDIUM",40,"Unusual network activity: "+e.user,"The supplied log labels network activity as unusual at "+e.ts+" from "+e.ip+".","Review the event context and compare it with approved network activity.",[e]))});
+fb.forEach(function(fs,user){for(var end=2;end<fs.length;end++){var first=fs[end-2],last=fs[end];
+if(Math.floor((last.t-first.t)/60)<=5){var w=fs.slice(end-2,end+1);al.push(A("HIGH",80,"Repeated login failures: "+user,w.length+" failed logins for the same account occurred within five minutes ("+first.ts+" to "+last.ts+").","Verify the user through an approved channel, review source activity, and follow the organization's account response procedure.",w));break}}});
+return al.sort(function(a,b){var d=SEV.indexOf(b.sev)-SEV.indexOf(a.sev);return d||(a.title<b.title?-1:a.title>b.title?1:0)})}
+function render(ev,al,er,tf,uf,ms){var fe=ev.filter(function(e){return!tf||e.type.toLowerCase()===tf.toLowerCase()}).filter(function(e){return!uf||e.user.toLowerCase()===uf.toLowerCase()}),
+ch=al.filter(function(a){return!ms||SEV.indexOf(a.sev)>=SEV.indexOf(ms)}),b="CYBER DEFENSE ANALYZER REPORT\n=============================\n";
+b+="Events loaded: "+ev.length+" | Events shown: "+fe.length+" | Alerts: "+ch.length+"\n"+"Malformed rows skipped: "+er.length+"\n";
+SEV.forEach(function(s){b+="  "+s+": "+ch.filter(function(a){return a.sev===s}).length+"\n"});
+b+="\nALERTS (prioritized)\n";if(!ch.length)b+="No alerts matched the selected filter.\n";
+ch.forEach(function(a){b+="["+a.sev+" | risk "+a.risk+"] "+a.title+"\n  Why: "+a.why+"\n  Action: "+a.act+"\n"});
+b+="\nEVENTS (chronological)\n";fe.forEach(function(e){b+=e.ts+" | "+e.user+" | "+e.type+" | "+e.ip+"\n"});
+if(er.length){b+="\nINPUT WARNINGS\n";er.forEach(function(e){b+="  "+e+"\n"})}
+return b+"\nRisk scores are rule-based prioritization aids, not probabilities.\n"}
+function getText(path){if(!(path in files)){var e=new Error(path);e.io=true;throw e}return files[path]}
+// dialogs
+function dlg(title,msg,btns,node){$("dt").textContent=title;var d=$("db");d.textContent="";if(msg)d.textContent=msg;if(node)d.appendChild(node);var bt=$("dbt");bt.textContent="";
+btns.forEach(function(b){var x=document.createElement("button");x.className="jb";x.textContent=b[0];x.onclick=function(){$("ov").classList.remove("on");if(b[1])b[1]()};bt.appendChild(x)});$("ov").classList.add("on");bt.firstChild&&bt.firstChild.focus()}
+function ok(t,m){dlg(t,m,[["OK"]])}
+// GUI
+$("bAn").onclick=function(){
+try{var l=read(getText($("inp").value.trim())),al=analyze(l.events);current=render(l.events,al,l.errors,null,null,null);$("rep").textContent=current;$("rep").parentNode.scrollTop=0;
+$("st").textContent="Analysis complete — "+l.events.length+" valid events, "+al.length+" alerts, "+l.errors.length+" invalid rows."}
+catch(e){$("st").textContent="Analysis failed.";ok("Analysis error","Could not analyze the selected file:\n"+e.message)}};
+$("bBrowse").onclick=function(){var sel=$("inp").value,ul=document.createElement("ul");ul.className="fl";
+Object.keys(files).forEach(function(k){var li=document.createElement("li");li.textContent=k;if(k===sel)li.className="s";li.onclick=function(){sel=k;[].forEach.call(ul.children,function(c){c.className=c===li?"s":""})};ul.appendChild(li)});
+var wrap=document.createElement("div"),up=document.createElement("input");up.type="file";up.accept=".csv,.txt";up.setAttribute("aria-label","Open a file from your computer");
+up.onchange=function(){if(up.files[0]){addFile(up.files[0]);$("ov").classList.remove("on")}};
+wrap.appendChild(document.createTextNode("Look in the project, or open a file from your computer:"));wrap.appendChild(ul);wrap.appendChild(up);
+dlg("Open",null,[["Open",function(){selectFile(sel)}],["Cancel"]],wrap)};
+$("bSave").onclick=function(){if(!current){ok("Message","Analyze a log file before saving a report.");return}
+var i=document.createElement("input");i.value="security_report.txt";i.style.cssText="width:100%;margin-top:8px;padding:3px 5px;border:1px solid #888";i.setAttribute("aria-label","File name");
+var w=document.createElement("div");w.appendChild(document.createTextNode("Save report as:"));w.appendChild(i);
+dlg("Save",null,[["Save",function(){ok("Message","Report saved.")}],["Cancel"]],w)};
+// terminal
+function run(){var path=$("inp").value.trim(),ms=$("fs").value,u=$("fu").value.trim(),t=$("ft").value.trim(),
+cmd="$ java -cp out cyberdefense.Main "+path+" report.txt"+(t?" --type "+t:"")+(u?" --user "+u:"")+(ms?" --min-severity "+ms:""),out;
+try{var l=read(getText(path));out=render(l.events,analyze(l.events),l.errors,t||null,u||null,ms||null)+"\nReport saved to report.txt\n"}
+catch(e){if(e.io)out="Cannot read or write file: "+e.message;else out="Exception in thread \"main\" java.time.format.DateTimeParseException: "+e.message+"\n\tat java.base/java.time.format.DateTimeFormatter.parseResolved0(...)\n\t... (stack trace continues; the program crashed)"}
+$("tout").innerHTML="";var s=document.createElement("span");s.className="cmd";s.textContent=cmd+"\n\n";$("tout").appendChild(s);$("tout").appendChild(document.createTextNode(out))}
+$("bRun").onclick=run;
+// tabs and cases
+function tab(g){$("gui").hidden=!g;$("term").hidden=g;$("tg").setAttribute("aria-selected",g);$("tt").setAttribute("aria-selected",!g);if(!g)run()}
+$("tg").onclick=function(){tab(true)};$("tt").onclick=function(){tab(false)};
+function selectFile(n){sel=n;$("inp").value=n;$("csv").value=files[n];$("pre").value=n;$("desc").textContent=descs[n]||"Uploaded file: "+n+". It is only read in your browser."}
+function addFile(f){if(f.size>2e6){$("desc").textContent="That file is over 2 MB, so it was not loaded.";return}
+var r=new FileReader();r.onload=function(){var n=f.name;files[n]=String(r.result);if(![].some.call($("pre").options,function(o){return o.value===n})){var o=document.createElement("option");o.value=n;o.textContent="Uploaded: "+n;$("pre").appendChild(o)}selectFile(n)};r.readAsText(f)}
+PRE.forEach(function(p){var o=document.createElement("option");o.value=p[0];o.textContent=p[1];$("pre").appendChild(o)});
+$("pre").onchange=function(){selectFile(this.value)};
+$("csv").oninput=function(){files[sel]=this.value};
+$("inp").onchange=function(){var v=this.value.trim();if(v in files)selectFile(v)};
+$("bUp").onclick=function(){$("up").click()};$("up").onchange=function(){if(this.files[0])addFile(this.files[0]);this.value=""};
+var pn=$("panel");["dragenter","dragover"].forEach(function(ev){pn.addEventListener(ev,function(e){e.preventDefault();pn.classList.add("on")})});
+["dragleave","drop"].forEach(function(ev){pn.addEventListener(ev,function(e){e.preventDefault();pn.classList.remove("on")})});
+pn.addEventListener("drop",function(e){var f=e.dataTransfer&&e.dataTransfer.files[0];if(f)addFile(f)});
+selectFile(PRE[0][0]);
+})();
+</script>
+</body>
+</html>
