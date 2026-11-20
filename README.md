@@ -1,3 +1,4 @@
+
 # Cyber Defense Analyzer
 
 A defensive Java console application for analyzing fictional security event logs. It reads CSV, validates rows, detects a small set of documented patterns, prioritizes alerts, and saves a text report. It operates only on supplied local data; sample usernames and documentation-only IP addresses are synthetic.
@@ -50,6 +51,7 @@ Ordinary successful logins and isolated failures do not generate alerts. A maxim
 - `ThreatAnalyzer`: rule evaluation, grouping, chronological sorting, severity and score assignment.
 - `SecurityReport`: filtering, summary counts, prioritized report formatting, file export.
 - `Main`: command-line coordination and error handling.
+<img width="3095" height="5247" alt="diagram" src="https://github.com/user-attachments/assets/f1a573b5-8a63-4f11-8622-50ac4c00e005" />
 
 ## Manual verification and limitations
 
